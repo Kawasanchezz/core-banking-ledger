@@ -7,7 +7,7 @@ COPY src ./src
 RUN mvn -B -q -DskipTests package \
     && java -Djarmode=tools -jar target/core-banking-1.0.0.jar extract --layers --destination target/extracted
 
-FROM eclipse-temurin:21-jre-alpine@sha256:ac05c3c42b7c2f1a52c9bd52f01041fa1958231b15ebeae7420429cbc5baf474
+FROM eclipse-temurin:25-jre-alpine@sha256:e1898fd6a11fc965a994d8ace186fd3585aeb636cf8f05f47a723fcfee0b0918
 RUN addgroup -S -g 10001 app && adduser -S -u 10001 -G app app
 WORKDIR /app
 COPY --from=build /build/target/extracted/dependencies/ ./
