@@ -6,7 +6,37 @@ API REST de core banking com **ledger de dupla entrada**, **transações ACID**,
 
 Projeto acadêmico de demonstração. Política de segurança e limitações conhecidas em [SECURITY.md](SECURITY.md).
 
+## O que o projeto faz
+Simula o núcleo de um banco: o cliente se cadastra (CPF validado), abre conta corrente ou poupança, deposita, saca, transfere e consulta saldo e extrato. O que o torna um *core banking* e não um simples CRUD:
+
+- **Dupla entrada:** toda operação gera um débito e um crédito do mesmo valor; a soma de todos os saldos do banco é sempre zero.
+- **Atomicidade:** se qualquer passo falha, tudo é desfeito (sem débito sem crédito).
+- **Concorrência:** operações simultâneas na mesma conta não geram deadlock nem saldo errado.
+- **Idempotência:** repetir a mesma requisição (por exemplo, após uma queda de rede) não executa a operação duas vezes.
+
+## Demonstração
+A aplicação serve uma interface web simples em <http://localhost:8080> e o Swagger UI em `/swagger-ui.html`.
+
+**Entrar ou criar conta** (o CPF é validado e o cadastro já faz o login):
+
+![Tela de login](docs/img/01-login.png)
+![Tela de cadastro](docs/img/02-cadastro.png)
+
+**Painel:** contas com saldo, depósito, saque e transferência, extrato paginado (crédito em verde, débito em vermelho) e a conferência de reconciliação, que compara o saldo gravado com a soma dos lançamentos do ledger:
+
+![Painel com contas, operações e extrato](docs/img/03-painel.png)
+
+**Erros claros:** uma regra de negócio violada (aqui, saque acima do saldo) volta como erro padronizado e aparece para o usuário, sem alterar nenhum saldo:
+
+![Erro de saldo insuficiente](docs/img/04-erro-saldo-insuficiente.png)
+
+**API documentada (Swagger UI):** todos os endpoints de autenticação, contas e transferências, com schemas e botão *Authorize* para o token JWT:
+
+![Swagger UI](docs/img/05-swagger.png)
+
 ## Sumário
+- [O que o projeto faz](#o-que-o-projeto-faz)
+- [Demonstração](#demonstração)
 - [Como rodar](#como-rodar)
 - [Estrutura do projeto](#estrutura-do-projeto)
 - [Arquitetura](#arquitetura)
