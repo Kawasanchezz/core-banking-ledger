@@ -2,7 +2,9 @@
 
 API REST de core banking com **ledger de dupla entrada**, **transações ACID**, **controle de concorrência** e **idempotência**.
 
-**Stack:** Java 21 · Spring Boot 3.4 · Spring Security + JWT · JPA/Hibernate · PostgreSQL 16 · Flyway · Docker · Testcontainers
+**Stack:** Java 21 · Spring Boot 3.5 · Spring Security + JWT · JPA/Hibernate · PostgreSQL 16 · Flyway · Docker · Testcontainers
+
+Projeto acadêmico de demonstração. Política de segurança e limitações conhecidas em [SECURITY.md](SECURITY.md).
 
 ## Sumário
 - [Como rodar](#como-rodar)
@@ -19,11 +21,13 @@ API REST de core banking com **ledger de dupla entrada**, **transações ACID**,
 
 ### Tudo em Docker (app + Postgres)
 ```bash
-cp .env.example .env        # ajuste DB_PASSWORD e JWT_SECRET (>= 32 bytes)
+cp .env.example .env        # preencha DB_PASSWORD e JWT_SECRET (>= 32 bytes); sem eles o compose não sobe
+# gerar valores: openssl rand -hex 24   (DB_PASSWORD)  ·  openssl rand -base64 48   (JWT_SECRET)
 docker compose up --build
 ```
-- API: <http://localhost:8080> · Swagger UI: <http://localhost:8080/swagger-ui.html>
+- Interface web de demonstração: <http://localhost:8080> · Swagger UI: <http://localhost:8080/swagger-ui.html>
 - Health: `/actuator/health` (liveness/readiness em `/actuator/health/liveness|readiness`)
+- As portas são publicadas só em `127.0.0.1` (acesso apenas da própria máquina).
 
 ### Desenvolvimento local
 ```bash
@@ -47,8 +51,9 @@ Relatório de cobertura: `target/site/jacoco/index.html`.
 | `DB_URL`, `DB_USER`, `DB_PASSWORD` | Conexão com o PostgreSQL |
 | `JWT_SECRET` | Segredo HS256, **mínimo 32 bytes** (a aplicação não sobe sem ele) |
 | `CHECKING_OVERDRAFT_LIMIT` | Limite de cheque especial da conta corrente (padrão `0.00`) |
+| `SWAGGER_ENABLED` | Liga o Swagger UI e `/v3/api-docs` no perfil `prod` (padrão `false`; o compose usa `true` para demonstração) |
 
-Perfis: `dev` (padrão, valores locais), `test` (Testcontainers), `prod` (tudo via env, logs JSON/ECS).
+Perfis: `dev` (padrão; sem `JWT_SECRET` gera um segredo aleatório a cada start), `test` (Testcontainers), `prod` (tudo via env, logs JSON/ECS).
 
 ## Estrutura do projeto
 ```
@@ -132,8 +137,10 @@ Obrigatório em depósito, saque e transferência (ausente → 400 `IDEMPOTENCY_
 
 ### Segurança
 - JWT HS256 stateless com expiração (60 min), senhas com BCrypt, mitigação de *user enumeration* no login (hash de tempo equivalente).
+- **Freio a força bruta no login:** 10 falhas por e-mail ou 30 por IP em 15 min bloqueiam novas tentativas (**429** `TOO_MANY_ATTEMPTS`).
+- **Corpo de requisição limitado a 16 KiB** (**413** `PAYLOAD_TOO_LARGE`) e cabeçalhos de segurança (CSP, `Referrer-Policy`, `X-Content-Type-Options`, `X-Frame-Options`, `Permissions-Policy`).
 - Cada cliente só acessa as próprias contas (**403**); conta inexistente → 404. Contas de origem exigem ser do solicitante; o destino pode ser de terceiros.
-- Segredos só por variável de ambiente; CPF mascarado em respostas e logs; senhas/tokens nunca logados.
+- Segredos só por variável de ambiente (nenhum valor padrão no repositório); CPF mascarado em respostas e logs; senhas/tokens nunca logados.
 - Correlation-id (`X-Correlation-Id`) em todo log e em todo erro (`correlationId` no ProblemDetail).
 
 ### Erros (RFC 7807)
@@ -141,7 +148,7 @@ Obrigatório em depósito, saque e transferência (ausente → 400 `IDEMPOTENCY_
 { "type": "about:blank", "title": "Saldo insuficiente", "status": 422,
   "detail": "Saldo insuficiente", "code": "INSUFFICIENT_FUNDS", "correlationId": "..." }
 ```
-Códigos: `VALIDATION_ERROR`, `INVALID_AMOUNT`, `INVALID_PERIOD`, `IDEMPOTENCY_KEY_MISSING`, `IDEMPOTENCY_KEY_REUSED`, `INVALID_CREDENTIALS`, `UNAUTHENTICATED`, `ACCESS_DENIED`, `ACCOUNT_NOT_FOUND`, `ACCOUNT_NOT_ACTIVE`, `INSUFFICIENT_FUNDS`, `SAME_ACCOUNT_TRANSFER`, `DUPLICATE_CPF`, `DUPLICATE_EMAIL`, `CONCURRENT_UPDATE`.
+Códigos: `VALIDATION_ERROR`, `INVALID_AMOUNT`, `INVALID_PERIOD`, `IDEMPOTENCY_KEY_MISSING`, `IDEMPOTENCY_KEY_REUSED`, `INVALID_CREDENTIALS`, `UNAUTHENTICATED`, `ACCESS_DENIED`, `ACCOUNT_NOT_FOUND`, `ACCOUNT_NOT_ACTIVE`, `INSUFFICIENT_FUNDS`, `SAME_ACCOUNT_TRANSFER`, `DUPLICATE_CPF`, `DUPLICATE_EMAIL`, `CONCURRENT_UPDATE`, `PAYLOAD_TOO_LARGE`, `TOO_MANY_ATTEMPTS`.
 
 ## API (exemplos curl)
 Base: `/api/v1`. Coleção pronta em [requests.http](requests.http) e documentação interativa no Swagger UI.
@@ -192,7 +199,8 @@ curl -s $H/accounts/1000/reconciliation -H "Authorization: Bearer $TOKEN"
 ## Testes
 | Suíte | O que prova |
 |---|---|
-| `CpfTest`, `MoneyTest`, `AccountTest`, `LedgerPosterTest`, `JwtServiceTest` | Regras de domínio, dígitos do CPF, BigDecimal, lançamentos balanceados, JWT |
+| `CpfTest`, `MoneyTest`, `AccountTest`, `LedgerPosterTest`, `JwtServiceTest`, `LoginAttemptLimiterTest` | Regras de domínio, dígitos do CPF, BigDecimal, lançamentos balanceados, JWT (inclui `alg=none`), freio de login |
+| `SecurityHardeningIntegrationTest` | Bloqueio de login (429), corpo grande (413), datas absurdas no extrato (400), cabeçalhos de segurança, reconciliação de conta alheia (403) |
 | `BankingFlowIntegrationTest` | Fluxo completo via HTTP: extrato (filtro/paginação), 401/403/404, validações, retry idempotente, payload divergente (422), CPF/e-mail duplicados |
 | `AtomicityIntegrationTest` | **Rollback atômico** com falha injetada no crédito; ledger append-only; trigger de balanceamento no COMMIT |
 | `ConcurrencyIntegrationTest` | 300 transferências cruzadas em 8 threads (sem deadlock, sem saldo negativo, total preservado); 20 saques disputando 100,00; 10 requisições simultâneas com a mesma chave |
@@ -217,4 +225,4 @@ curl -s $H/accounts/1000/reconciliation -H "Authorization: Bearer $TOKEN"
 - **Resposta idempotente armazenada como texto JSON** (simples e portável); em escala, considerar `jsonb` e particionamento/expiração mais agressiva.
 - **Extrato por `OFFSET`:** adequado a este escopo; para históricos enormes, trocar por paginação *keyset* (`created_at, id`).
 - **Segredo JWT simétrico (HS256):** suficiente para um único serviço; com múltiplos consumidores, preferir RS256/JWKS e rotação de chaves. Não há *refresh token* nem revogação.
-- **Sem rate limiting** nem proteção contra força bruta no login (recomendado na borda/API gateway).
+- **Rate limit só no login e em memória** (por instância); operações autenticadas não têm limite de frequência. Em produção, complemente no gateway.
