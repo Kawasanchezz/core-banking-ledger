@@ -456,6 +456,8 @@
 **/backups
 # ATENCAO: *.sql tambem ignora migrations e scripts de init. Se o app ou a
 # imagem do banco usa arquivos .sql do repositorio, libere-os: !migrations/**
+# As migrations do Flyway sao empacotadas no jar: sem elas a aplicacao nao sobe.
+!src/main/resources/db/migration/*.sql
 
 # --- logs, crash dumps e relatorios de scanners ---
 **/*.log
