@@ -44,7 +44,7 @@ class BankingFlowIntegrationTest extends AbstractIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.tokenType").value("Bearer"))
                 .andReturn();
-        return new Client(body(login).get("accessToken").asText(), customerId);
+        return new Client(body(login).get("accessToken").asString(), customerId);
     }
 
     private JsonNode body(MvcResult r) throws Exception {
@@ -81,7 +81,7 @@ class BankingFlowIntegrationTest extends AbstractIntegrationTest {
     private String balance(Client c, long account) throws Exception {
         MvcResult r = mvc.perform(auth(get("/api/v1/accounts/" + account + "/balance"), c))
                 .andExpect(status().isOk()).andReturn();
-        return new java.math.BigDecimal(body(r).get("balance").asText()).setScale(2).toPlainString();
+        return new java.math.BigDecimal(body(r).get("balance").asString()).setScale(2).toPlainString();
     }
 
     private static String key() {
@@ -98,7 +98,7 @@ class BankingFlowIntegrationTest extends AbstractIntegrationTest {
         assertThat(deposit(alice, a, "500.00", key()).getResponse().getStatus()).isEqualTo(201);
         MvcResult tr = transfer(alice, a, b, "200.50", key());
         assertThat(tr.getResponse().getStatus()).isEqualTo(201);
-        assertThat(body(tr).get("type").asText()).isEqualTo("TRANSFER");
+        assertThat(body(tr).get("type").asString()).isEqualTo("TRANSFER");
 
         assertThat(balance(alice, a)).isEqualTo("299.50");
         assertThat(balance(bob, b)).isEqualTo("200.50");
@@ -154,7 +154,7 @@ class BankingFlowIntegrationTest extends AbstractIntegrationTest {
 
         mvc.perform(auth(post("/api/v1/accounts/" + acc + "/withdrawals"), c).header("Idempotency-Key", key())
                         .content("{\"amount\":60.01}"))
-                .andExpect(status().isUnprocessableEntity())
+                .andExpect(status().isUnprocessableContent())
                 .andExpect(jsonPath("$.code").value("INSUFFICIENT_FUNDS"))
                 .andExpect(jsonPath("$.correlationId").exists());
 
@@ -198,7 +198,7 @@ class BankingFlowIntegrationTest extends AbstractIntegrationTest {
         MvcResult different = transfer(alice, a, b, "250.00", idem);
 
         assertThat(different.getResponse().getStatus()).isEqualTo(422);
-        assertThat(body(different).get("code").asText()).isEqualTo("IDEMPOTENCY_KEY_REUSED");
+        assertThat(body(different).get("code").asString()).isEqualTo("IDEMPOTENCY_KEY_REUSED");
         assertThat(balance(alice, a)).isEqualTo("900.00");
     }
 
@@ -253,7 +253,7 @@ class BankingFlowIntegrationTest extends AbstractIntegrationTest {
         }
         MvcResult same = transfer(c, acc, acc, "1.00", key());
         assertThat(same.getResponse().getStatus()).isEqualTo(422);
-        assertThat(body(same).get("code").asText()).isEqualTo("SAME_ACCOUNT_TRANSFER");
+        assertThat(body(same).get("code").asString()).isEqualTo("SAME_ACCOUNT_TRANSFER");
         // tipo CAIXA não pode ser aberto por cliente
         mvc.perform(auth(post("/api/v1/accounts"), c).content("{\"type\":\"CAIXA\"}"))
                 .andExpect(status().isBadRequest());

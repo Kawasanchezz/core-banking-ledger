@@ -32,7 +32,7 @@ public class RequestSizeLimitFilter extends OncePerRequestFilter {
         long length = request.getContentLengthLong();
         boolean chunked = length < 0 && request.getHeader("Transfer-Encoding") != null;
         if (length > MAX_BODY_BYTES || chunked) {
-            ProblemResponses.write(response, mapper, HttpStatus.PAYLOAD_TOO_LARGE, ErrorCode.PAYLOAD_TOO_LARGE);
+            ProblemResponses.write(response, mapper, HttpStatus.CONTENT_TOO_LARGE, ErrorCode.PAYLOAD_TOO_LARGE);
             return;
         }
         chain.doFilter(request, response);

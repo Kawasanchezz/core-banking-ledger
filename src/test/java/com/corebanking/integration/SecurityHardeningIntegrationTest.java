@@ -25,7 +25,7 @@ class SecurityHardeningIntegrationTest extends AbstractIntegrationTest {
         String body = mvc.perform(post("/api/v1/auth/login").contentType(MediaType.APPLICATION_JSON)
                         .content(json.writeValueAsString(Map.of("email", email, "password", password))))
                 .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
-        return json.readTree(body).get("accessToken").asText();
+        return json.readTree(body).get("accessToken").asString();
     }
 
     @Test
@@ -51,7 +51,7 @@ class SecurityHardeningIntegrationTest extends AbstractIntegrationTest {
     void oversizedBodyIsRejectedBeforeBeingRead() throws Exception {
         String huge = "{\"name\":\"" + "A".repeat(20_000) + "\"}";
         mvc.perform(post("/api/v1/auth/register").contentType(MediaType.APPLICATION_JSON).content(huge))
-                .andExpect(status().isPayloadTooLarge())
+                .andExpect(status().isContentTooLarge())
                 .andExpect(jsonPath("$.code").value("PAYLOAD_TOO_LARGE"));
     }
 
