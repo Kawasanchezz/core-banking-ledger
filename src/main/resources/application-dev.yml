@@ -1,0 +1,15 @@
+# Perfil de desenvolvimento local: suba só o banco com `docker compose up -d postgres`
+spring:
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/corebanking}
+    username: ${DB_USER:corebanking}
+    password: ${DB_PASSWORD:corebanking}
+
+bank:
+  jwt:
+    # APENAS para desenvolvimento. Em produção use JWT_SECRET (perfil prod).
+    secret: ${JWT_SECRET:dev-only-secret-change-me-dev-only-secret-0123456789}
+
+logging:
+  level:
+    com.corebanking: DEBUG

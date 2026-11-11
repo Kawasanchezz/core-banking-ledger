@@ -1,0 +1,13 @@
+# Datasource é injetado pelo Testcontainers (@DynamicPropertySource).
+bank:
+  jwt:
+    secret: test-secret-test-secret-test-secret-0123456789
+  scheduling:
+    enabled: false
+  account:
+    checking-overdraft-limit: 0.00
+
+logging:
+  level:
+    root: WARN
+    com.corebanking: INFO

@@ -1,0 +1,35 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: corebanking
+      POSTGRES_USER: corebanking
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-corebanking}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U corebanking -d corebanking"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  app:
+    build: .
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      DB_URL: jdbc:postgresql://postgres:5432/corebanking
+      DB_USER: corebanking
+      DB_PASSWORD: ${DB_PASSWORD:-corebanking}
+      # Padrão apenas para demo local. Em qualquer ambiente real defina JWT_SECRET (>= 32 bytes) no .env.
+      JWT_SECRET: ${JWT_SECRET:-local-demo-secret-change-me-0123456789abcdef}
+      CHECKING_OVERDRAFT_LIMIT: ${CHECKING_OVERDRAFT_LIMIT:-0.00}
+    ports:
+      - "8080:8080"
+
+volumes:
+  pgdata:

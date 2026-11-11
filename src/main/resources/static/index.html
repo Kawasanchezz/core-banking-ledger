@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Core Banking</title>
+  <link rel="stylesheet" href="/app.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">Core Banking</div>
+    <nav>
+      <a href="/swagger-ui.html" target="_blank" rel="noopener">API (Swagger)</a>
+      <span id="userBox" hidden>
+        <span id="userName"></span>
+        <button id="logoutBtn" class="link">Sair</button>
+      </span>
+    </nav>
+  </header>
+
+  <main>
+    <!-- Autenticação -->
+    <section id="authView" class="card narrow">
+      <div class="tabs">
+        <button id="tabLogin" class="tab active" type="button">Entrar</button>
+        <button id="tabRegister" class="tab" type="button">Criar conta</button>
+      </div>
+
+      <form id="loginForm">
+        <label>E-mail <input name="email" type="email" required autocomplete="username"></label>
+        <label>Senha <input name="password" type="password" required autocomplete="current-password"></label>
+        <button class="primary" type="submit">Entrar</button>
+      </form>
+
+      <form id="registerForm" hidden>
+        <label>Nome <input name="name" required maxlength="120"></label>
+        <label>CPF <input name="cpf" required placeholder="529.982.247-25" inputmode="numeric"></label>
+        <label>E-mail <input name="email" type="email" required autocomplete="username"></label>
+        <label>Senha (mín. 8) <input name="password" type="password" required minlength="8" maxlength="72" autocomplete="new-password"></label>
+        <button class="primary" type="submit">Cadastrar e entrar</button>
+      </form>
+    </section>
+
+    <!-- Painel -->
+    <section id="appView" hidden>
+      <div class="grid">
+        <div class="card">
+          <div class="card-head">
+            <h2>Minhas contas</h2>
+            <div class="row">
+              <select id="newType">
+                <option value="CORRENTE">Corrente</option>
+                <option value="POUPANCA">Poupança</option>
+              </select>
+              <button id="openAccountBtn" class="primary small" type="button">Abrir conta</button>
+            </div>
+          </div>
+          <ul id="accountList" class="accounts"></ul>
+          <p id="noAccounts" class="muted" hidden>Você ainda não tem contas. Abra uma acima.</p>
+        </div>
+
+        <div class="card" id="opsCard" hidden>
+          <h2>Operações <span id="selLabel" class="muted"></span></h2>
+          <div class="balance">
+            <div class="muted">Saldo disponível</div>
+            <div id="balanceValue" class="big">—</div>
+          </div>
+
+          <div class="tabs">
+            <button class="tab active" data-op="deposit" type="button">Depósito</button>
+            <button class="tab" data-op="withdraw" type="button">Saque</button>
+            <button class="tab" data-op="transfer" type="button">Transferência</button>
+          </div>
+
+          <form id="opForm">
+            <label id="targetRow" hidden>Conta de destino (id)
+              <input name="target" type="number" min="1" inputmode="numeric">
+            </label>
+            <label>Valor (R$)
+              <input name="amount" type="number" min="0.01" step="0.01" required inputmode="decimal">
+            </label>
+            <label>Descrição (opcional)
+              <input name="description" maxlength="140">
+            </label>
+            <button class="primary" type="submit" id="opSubmit">Depositar</button>
+          </form>
+
+          <button id="reconcileBtn" class="link" type="button">Conferir reconciliação do ledger</button>
+          <p id="reconcileResult" class="muted"></p>
+        </div>
+      </div>
+
+      <div class="card" id="stmtCard" hidden>
+        <div class="card-head">
+          <h2>Extrato</h2>
+          <div class="row">
+            <label class="inline">De <input type="date" id="stFrom"></label>
+            <label class="inline">Até <input type="date" id="stTo"></label>
+            <button id="stFilter" class="small" type="button">Filtrar</button>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Data</th><th>Tipo</th><th>Descrição</th><th class="num">Valor</th><th class="num">Saldo após</th></tr>
+            </thead>
+            <tbody id="stBody"></tbody>
+          </table>
+        </div>
+        <p id="stEmpty" class="muted" hidden>Nenhum lançamento no período.</p>
+        <div class="pager">
+          <button id="prevPage" class="small" type="button">‹ Anterior</button>
+          <span id="pageInfo" class="muted"></span>
+          <button id="nextPage" class="small" type="button">Próxima ›</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="toast" class="toast" hidden></div>
+  <script src="/app.js"></script>
+</body>
+</html>

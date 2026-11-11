@@ -1,0 +1,60 @@
+:root {
+  --bg: #f3f5f9; --card: #fff; --ink: #1c2434; --muted: #6b7587; --line: #e3e7ee;
+  --brand: #0b5fff; --brand-dark: #0847c2; --ok: #0f8a4b; --bad: #c62828;
+}
+* { box-sizing: border-box; }
+body { margin: 0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--ink); }
+.topbar { display: flex; justify-content: space-between; align-items: center; padding: 14px 24px; background: #0e1626; color: #fff; }
+.brand { font-weight: 700; letter-spacing: .3px; }
+.topbar nav { display: flex; gap: 18px; align-items: center; font-size: 14px; }
+.topbar a { color: #b9c6e4; text-decoration: none; }
+.topbar a:hover { color: #fff; }
+main { max-width: 1040px; margin: 24px auto; padding: 0 16px; }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+.card.narrow { max-width: 420px; margin: 40px auto; }
+.card-head { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 12px; }
+h2 { margin: 0 0 8px; font-size: 18px; }
+.card-head h2 { margin: 0; }
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.grid .card { margin-bottom: 0; }
+#appView > .card { margin-top: 20px; }
+@media (max-width: 820px) { .grid { grid-template-columns: 1fr; } }
+.row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 12px; }
+label.inline { display: inline-flex; gap: 6px; align-items: center; margin: 0; }
+input, select { width: 100%; margin-top: 4px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; font-size: 15px; background: #fff; color: var(--ink); }
+label.inline input { width: auto; margin: 0; padding: 6px 8px; font-size: 13px; }
+select { width: auto; margin: 0; padding: 7px 10px; }
+button { font: inherit; cursor: pointer; border-radius: 8px; border: 1px solid var(--line); background: #fff; padding: 9px 14px; }
+button:hover { background: #f5f7fb; }
+button.primary { background: var(--brand); border-color: var(--brand); color: #fff; font-weight: 600; width: 100%; }
+button.primary.small { width: auto; }
+button.primary:hover { background: var(--brand-dark); }
+button.small { padding: 7px 12px; font-size: 13px; }
+button:disabled { opacity: .5; cursor: default; }
+button.link { border: 0; background: none; color: var(--brand); padding: 6px 0; }
+.topbar button.link { color: #b9c6e4; }
+.tabs { display: flex; gap: 6px; margin-bottom: 16px; }
+.tab { flex: 1; background: #eef1f7; border: 0; color: var(--muted); font-weight: 600; }
+.tab.active { background: var(--brand); color: #fff; }
+.accounts { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.accounts li { border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+.accounts li:hover { border-color: var(--brand); }
+.accounts li.sel { border-color: var(--brand); background: #eef4ff; }
+.acc-title { font-weight: 600; }
+.acc-sub { font-size: 12px; color: var(--muted); }
+.acc-bal { font-weight: 700; font-variant-numeric: tabular-nums; }
+.balance { margin-bottom: 14px; }
+.big { font-size: 30px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.muted { color: var(--muted); font-size: 13px; font-weight: 400; }
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th, td { padding: 9px 8px; border-bottom: 1px solid var(--line); text-align: left; white-space: nowrap; }
+th { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .4px; }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+.credit { color: var(--ok); } .debit { color: var(--bad); }
+.pager { display: flex; justify-content: center; align-items: center; gap: 14px; margin-top: 12px; }
+.toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: #1c2434; color: #fff; padding: 12px 18px; border-radius: 10px; max-width: 90vw; box-shadow: 0 6px 24px rgba(0,0,0,.25); }
+.toast.error { background: var(--bad); }
+.toast.ok { background: var(--ok); }
+[hidden] { display: none !important; }
