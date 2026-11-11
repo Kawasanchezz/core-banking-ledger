@@ -4,6 +4,7 @@ import com.corebanking.api.dto.AuthDtos.*;
 import com.corebanking.application.AuthService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -27,7 +28,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public TokenResponse login(@Valid @RequestBody LoginRequest request) {
-        return auth.login(request);
+    public TokenResponse login(@Valid @RequestBody LoginRequest request, HttpServletRequest http) {
+        return auth.login(request, http.getRemoteAddr());
     }
 }

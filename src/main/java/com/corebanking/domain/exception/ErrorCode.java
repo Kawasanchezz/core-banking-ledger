@@ -14,6 +14,8 @@ public enum ErrorCode {
     DUPLICATE_CPF(409, "CPF já cadastrado"),
     DUPLICATE_EMAIL(409, "E-mail já cadastrado"),
     CONCURRENT_UPDATE(409, "Conflito de concorrência"),
+    PAYLOAD_TOO_LARGE(413, "Requisição grande demais"),
+    TOO_MANY_ATTEMPTS(429, "Muitas tentativas"),
     INSUFFICIENT_FUNDS(422, "Saldo insuficiente"),
     ACCOUNT_NOT_ACTIVE(422, "Conta não está ativa"),
     SAME_ACCOUNT_TRANSFER(422, "Transferência para a mesma conta"),

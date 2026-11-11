@@ -10,6 +10,7 @@ import com.corebanking.infrastructure.repository.CustomerRepository;
 import com.corebanking.infrastructure.repository.UserRepository;
 import com.corebanking.infrastructure.security.AuthenticatedUser;
 import com.corebanking.infrastructure.security.JwtService;
+import com.corebanking.infrastructure.security.LoginAttemptLimiter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -28,16 +29,18 @@ public class AuthService {
     private final UserRepository users;
     private final PasswordEncoder encoder;
     private final JwtService jwt;
+    private final LoginAttemptLimiter attempts;
     private final Clock clock;
     /** Hash descartável para equalizar o tempo de resposta quando o e-mail não existe. */
     private final String dummyHash;
 
     public AuthService(CustomerRepository customers, UserRepository users, PasswordEncoder encoder,
-                       JwtService jwt, Clock clock) {
+                       JwtService jwt, LoginAttemptLimiter attempts, Clock clock) {
         this.customers = customers;
         this.users = users;
         this.encoder = encoder;
         this.jwt = jwt;
+        this.attempts = attempts;
         this.clock = clock;
         this.dummyHash = encoder.encode("dummy-password-for-timing");
     }
@@ -59,13 +62,16 @@ public class AuthService {
     }
 
     @Transactional(readOnly = true)
-    public TokenResponse login(LoginRequest req) {
+    public TokenResponse login(LoginRequest req, String clientIp) {
         String email = req.email().trim().toLowerCase(Locale.ROOT);
+        attempts.checkAllowed(email, clientIp);
         AppUser user = users.findByEmail(email).orElse(null);
         boolean ok = encoder.matches(req.password(), user != null ? user.getPasswordHash() : dummyHash);
         if (user == null || !ok) {
+            attempts.recordFailure(email, clientIp);
             throw new BusinessException(ErrorCode.INVALID_CREDENTIALS, "E-mail ou senha inválidos");
         }
+        attempts.recordSuccess(email);
         String token = jwt.generate(new AuthenticatedUser(user.getId(), user.getCustomerId(), user.getEmail()));
         return new TokenResponse(token, "Bearer", jwt.expiresInSeconds());
     }

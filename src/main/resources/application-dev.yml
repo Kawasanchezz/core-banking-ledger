@@ -7,8 +7,9 @@ spring:
 
 bank:
   jwt:
-    # APENAS para desenvolvimento. Em produção use JWT_SECRET (perfil prod).
-    secret: ${JWT_SECRET:dev-only-secret-change-me-dev-only-secret-0123456789}
+    # Sem JWT_SECRET, gera um segredo aleatório a cada start (os tokens deixam de valer ao reiniciar).
+    # Nenhum segredo fixo no repositório: este perfil é o padrão quando nenhum outro é ativado.
+    secret: ${JWT_SECRET:${random.uuid}${random.uuid}}
 
 logging:
   level:

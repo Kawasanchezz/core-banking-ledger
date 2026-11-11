@@ -5,6 +5,12 @@ spring:
     username: ${DB_USER}
     password: ${DB_PASSWORD}
 
+springdoc:
+  api-docs:
+    enabled: ${SWAGGER_ENABLED:false}
+  swagger-ui:
+    enabled: ${SWAGGER_ENABLED:false}
+
 bank:
   jwt:
     secret: ${JWT_SECRET}

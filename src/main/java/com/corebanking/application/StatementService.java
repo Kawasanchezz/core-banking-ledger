@@ -19,6 +19,8 @@ import java.time.ZoneOffset;
 public class StatementService {
 
     static final int MAX_PAGE_SIZE = 100;
+    private static final LocalDate MIN_DATE = LocalDate.of(1970, 1, 1);
+    private static final LocalDate MAX_DATE = LocalDate.of(9998, 12, 31);
     private static final Instant MIN = Instant.EPOCH;
     private static final Instant MAX = Instant.parse("9999-01-01T00:00:00Z");
 
@@ -44,6 +46,10 @@ public class StatementService {
         if (from != null && to != null && from.isAfter(to)) {
             throw new BusinessException(ErrorCode.INVALID_PERIOD, "'from' deve ser anterior ou igual a 'to'");
         }
+        if (outOfRange(from) || outOfRange(to)) {
+            throw new BusinessException(ErrorCode.INVALID_PERIOD,
+                    "As datas devem estar entre " + MIN_DATE + " e " + MAX_DATE);
+        }
         Instant start = from == null ? MIN : from.atStartOfDay(ZoneOffset.UTC).toInstant();
         Instant endExclusive = to == null ? MAX : to.plusDays(1).atStartOfDay(ZoneOffset.UTC).toInstant();
 
@@ -51,6 +57,11 @@ public class StatementService {
         return new PageResponse<>(
                 result.getContent().stream().map(StatementService::toResponse).toList(),
                 result.getNumber(), result.getSize(), result.getTotalElements(), result.getTotalPages());
+    }
+
+    /** Datas absurdas (ex.: ano 999999999) estourariam a conversão para Instant/Timestamp e virariam erro 500. */
+    private static boolean outOfRange(LocalDate date) {
+        return date != null && (date.isBefore(MIN_DATE) || date.isAfter(MAX_DATE));
     }
 
     private static StatementEntryResponse toResponse(LedgerEntry e) {
