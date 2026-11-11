@@ -182,7 +182,7 @@ Obrigatório em depósito, saque e transferência (ausente → 400 `IDEMPOTENCY_
 Códigos: `VALIDATION_ERROR`, `INVALID_AMOUNT`, `INVALID_PERIOD`, `IDEMPOTENCY_KEY_MISSING`, `IDEMPOTENCY_KEY_REUSED`, `INVALID_CREDENTIALS`, `UNAUTHENTICATED`, `ACCESS_DENIED`, `ACCOUNT_NOT_FOUND`, `ACCOUNT_NOT_ACTIVE`, `INSUFFICIENT_FUNDS`, `SAME_ACCOUNT_TRANSFER`, `DUPLICATE_CPF`, `DUPLICATE_EMAIL`, `CONCURRENT_UPDATE`, `PAYLOAD_TOO_LARGE`, `TOO_MANY_ATTEMPTS`.
 
 ## API (exemplos curl)
-Base: `/api/v1`. Coleção pronta em [requests.http](requests.http) e documentação interativa no Swagger UI.
+Base: `/api/v1`. Documentação interativa no Swagger UI.
 
 ```bash
 H=http://localhost:8080/api/v1

@@ -1,0 +1,10 @@
+1cc07dbf914b0244dc7720de24f22252b5c644d5:src/test/java/com/corebanking/integration/SecurityHardeningIntegrationTest.java:generic-api-key:90
+788aef991f40092cc0f1690ad46176a991063912:src/test/java/com/corebanking/integration/SecurityHardeningIntegrationTest.java:generic-api-key:37
+b73f91e660c603a1ad7ad2724c23d66c678a0ea2:README.md:generic-api-key:154
+b73f91e660c603a1ad7ad2724c23d66c678a0ea2:README.md:generic-api-key:156
+b73f91e660c603a1ad7ad2724c23d66c678a0ea2:requests.http:generic-api-key:13
+b73f91e660c603a1ad7ad2724c23d66c678a0ea2:requests.http:generic-api-key:24
+b73f91e660c603a1ad7ad2724c23d66c678a0ea2:src/test/java/com/corebanking/integration/BankingFlowIntegrationTest.java:generic-api-key:282
+b73f91e660c603a1ad7ad2724c23d66c678a0ea2:src/test/java/com/corebanking/integration/BankingFlowIntegrationTest.java:generic-api-key:287
+b73f91e660c603a1ad7ad2724c23d66c678a0ea2:src/test/java/com/corebanking/integration/BankingFlowIntegrationTest.java:generic-api-key:291
+b73f91e660c603a1ad7ad2724c23d66c678a0ea2:src/test/java/com/corebanking/integration/BankingFlowIntegrationTest.java:generic-api-key:33
