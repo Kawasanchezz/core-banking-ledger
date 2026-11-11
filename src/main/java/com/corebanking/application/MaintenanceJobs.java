@@ -20,7 +20,6 @@ public class MaintenanceJobs {
         this.reconciliation = reconciliation;
     }
 
-    /** TTL das chaves de idempotência. */
     @Scheduled(fixedDelayString = "${bank.idempotency.cleanup-interval:PT1H}", initialDelayString = "PT5M")
     public void purgeIdempotencyKeys() {
         int removed = idempotency.purgeExpired();

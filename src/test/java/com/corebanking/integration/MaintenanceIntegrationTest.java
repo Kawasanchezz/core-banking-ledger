@@ -38,7 +38,7 @@ class MaintenanceIntegrationTest extends AbstractIntegrationTest {
         assertThat(reconciliation.check(c, acc).consistent()).isFalse();
         assertThat(reconciliation.findInconsistencies()).extracting(r -> r.accountId()).contains(acc);
 
-        jdbc.update("UPDATE accounts SET balance = 10.00 WHERE id = ?", acc);    // restaura
+        jdbc.update("UPDATE accounts SET balance = 10.00 WHERE id = ?", acc);
         assertThat(reconciliation.findInconsistencies()).isEmpty();
     }
 }

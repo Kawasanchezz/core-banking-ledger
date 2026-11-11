@@ -117,7 +117,6 @@ class BankingFlowIntegrationTest extends AbstractIntegrationTest {
                 .andExpect(jsonPath("$.content[1].direction").value("CREDIT"))
                 .andExpect(jsonPath("$.content[1].balanceAfter").value(500.00));
 
-        // paginação
         mvc.perform(auth(get("/api/v1/accounts/" + a + "/statement"), alice).param("size", "1").param("page", "1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content.length()").value(1))
@@ -132,13 +131,11 @@ class BankingFlowIntegrationTest extends AbstractIntegrationTest {
                         .param("to", today.minusDays(1).toString()))
                 .andExpect(jsonPath("$.totalElements").value(0));
 
-        // período invertido
         mvc.perform(auth(get("/api/v1/accounts/" + a + "/statement"), alice)
                         .param("from", today.plusDays(1).toString()).param("to", today.toString()))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value("INVALID_PERIOD"));
 
-        // reconciliação: saldo == ledger
         mvc.perform(auth(get("/api/v1/accounts/" + a + "/reconciliation"), alice))
                 .andExpect(jsonPath("$.consistent").value(true))
                 .andExpect(jsonPath("$.ledgerBalance").value(299.50));
@@ -239,7 +236,6 @@ class BankingFlowIntegrationTest extends AbstractIntegrationTest {
 
     @Test
     void validatesInput() throws Exception {
-        // CPF inválido, e-mail inválido, senha curta
         mvc.perform(post("/api/v1/auth/register").contentType(MediaType.APPLICATION_JSON)
                         .content("{\"name\":\"X\",\"email\":\"nao-e-email\",\"password\":\"123\",\"cpf\":\"111.111.111-11\"}"))
                 .andExpect(status().isBadRequest())
@@ -255,7 +251,6 @@ class BankingFlowIntegrationTest extends AbstractIntegrationTest {
         for (String badAmount : new String[]{"0", "-5", "10.001"}) {
             assertThat(deposit(c, acc, badAmount, key()).getResponse().getStatus()).isEqualTo(400);
         }
-        // mesma conta
         MvcResult same = transfer(c, acc, acc, "1.00", key());
         assertThat(same.getResponse().getStatus()).isEqualTo(422);
         assertThat(body(same).get("code").asText()).isEqualTo("SAME_ACCOUNT_TRANSFER");
@@ -265,12 +260,10 @@ class BankingFlowIntegrationTest extends AbstractIntegrationTest {
         // transferir para a conta CAIXA do banco é proibido
         deposit(c, acc, "10.00", key());
         assertThat(transfer(c, acc, 1L, "1.00", key()).getResponse().getStatus()).isEqualTo(404);
-        // login errado
         mvc.perform(post("/api/v1/auth/login").contentType(MediaType.APPLICATION_JSON)
                         .content("{\"email\":\"ninguem@x.com\",\"password\":\"qualquer-senha\"}"))
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.code").value("INVALID_CREDENTIALS"));
-        // listagem
         mvc.perform(auth(get("/api/v1/accounts"), c)).andExpect(jsonPath("$.length()").value(2));
         assertThat(acc2).isNotEqualTo(acc);
     }

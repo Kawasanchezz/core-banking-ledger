@@ -59,7 +59,6 @@ public class TransactionService {
             Account cash = locked.get(Account.CASH_ACCOUNT_ID);
             Account target = locked.get(accountId);
 
-            // Depósito: débito no CAIXA do banco, crédito na conta do cliente
             BankTransaction tx = ledger.post(TransactionType.DEPOSIT, amount, req.description(),
                     cash, target, customerId, idemKey);
             log.info("Depósito efetuado tx={} conta={}", tx.getId(), accountId);
@@ -80,7 +79,6 @@ public class TransactionService {
             Account cash = locked.get(Account.CASH_ACCOUNT_ID);
             Account source = locked.get(accountId);
 
-            // Saque: débito na conta do cliente, crédito no CAIXA do banco
             BankTransaction tx = ledger.post(TransactionType.WITHDRAWAL, amount, req.description(),
                     source, cash, customerId, idemKey);
             log.info("Saque efetuado tx={} conta={}", tx.getId(), accountId);
@@ -109,7 +107,6 @@ public class TransactionService {
                 throw new BusinessException(ErrorCode.ACCOUNT_NOT_FOUND, "Conta de destino não encontrada");
             }
 
-            // Transferência: débito na origem, crédito no destino
             BankTransaction tx = ledger.post(TransactionType.TRANSFER, amount, req.description(),
                     source, target, customerId, idemKey);
             log.info("Transferência efetuada tx={} origem={} destino={}", tx.getId(), sourceId, targetId);

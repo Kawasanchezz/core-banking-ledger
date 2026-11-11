@@ -78,7 +78,6 @@ public class Account {
         return this.customerId != null && this.customerId.equals(customerId);
     }
 
-    /** Saldo + limite de cheque especial. */
     public BigDecimal availableBalance() {
         return balance.add(overdraftLimit);
     }
@@ -92,7 +91,6 @@ public class Account {
         balance = balance.subtract(amount);
     }
 
-    /** Crédito: aumenta o saldo. */
     public void credit(BigDecimal amount) {
         ensureActive();
         balance = balance.add(amount);

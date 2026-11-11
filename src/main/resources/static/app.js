@@ -15,7 +15,6 @@ const state = {
   totalPages: 0,
 };
 
-// ---------- infraestrutura HTTP ----------
 async function api(path, { method = 'GET', body, idemKey } = {}) {
   const headers = { Accept: 'application/json' };
   if (body !== undefined) headers['Content-Type'] = 'application/json';
@@ -61,7 +60,6 @@ async function guarded(fn, button) {
   finally { if (button) button.disabled = false; }
 }
 
-// ---------- autenticação ----------
 function showAuthTab(login) {
   $('loginForm').hidden = !login;
   $('registerForm').hidden = login;
@@ -117,7 +115,6 @@ async function enterApp() {
   await loadAccounts();
 }
 
-// ---------- contas ----------
 async function loadAccounts() {
   state.accounts = await api('/accounts');
   renderAccounts();
@@ -174,7 +171,6 @@ async function refreshBalance() {
   if (acc) { acc.balance = b.balance; renderAccounts(); }
 }
 
-// ---------- operações ----------
 const OPS = {
   deposit: { label: 'Depositar', done: 'Depósito realizado' },
   withdraw: { label: 'Sacar', done: 'Saque realizado' },
@@ -223,7 +219,6 @@ $('reconcileBtn').onclick = (ev) => guarded(async () => {
     + ' — saldo gravado ' + brl.format(r.storedBalance) + ' · saldo pelo ledger ' + brl.format(r.ledgerBalance);
 }, ev.currentTarget);
 
-// ---------- extrato ----------
 async function loadStatement() {
   const q = new URLSearchParams({ page: state.page, size: 10 });
   if ($('stFrom').value) q.set('from', $('stFrom').value);
@@ -255,5 +250,4 @@ $('stFilter').onclick = (ev) => { state.page = 0; guarded(loadStatement, ev.curr
 $('prevPage').onclick = (ev) => { if (state.page > 0) { state.page--; guarded(loadStatement, ev.currentTarget); } };
 $('nextPage').onclick = (ev) => { if (state.page + 1 < state.totalPages) { state.page++; guarded(loadStatement, ev.currentTarget); } };
 
-// ---------- início ----------
 if (state.token) { enterApp().catch(() => logout()); }
