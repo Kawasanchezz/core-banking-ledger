@@ -1,4 +1,3 @@
-# Perfil de desenvolvimento local: suba só o banco com `docker compose up -d postgres`
 spring:
   datasource:
     url: ${DB_URL:jdbc:postgresql://localhost:5432/corebanking}
@@ -7,8 +6,6 @@ spring:
 
 bank:
   jwt:
-    # Sem JWT_SECRET, gera um segredo aleatório a cada start (os tokens deixam de valer ao reiniciar).
-    # Nenhum segredo fixo no repositório: este perfil é o padrão quando nenhum outro é ativado.
     secret: ${JWT_SECRET:${random.uuid}${random.uuid}}
 
 logging:

@@ -11,12 +11,6 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.concurrent.ConcurrentHashMap;
 
-/**
- * Freio a força bruta no login: conta falhas em janela deslizante por e-mail e por IP.
- * Em memória, portanto por instância: com várias réplicas o limite efetivo é multiplicado
- * (um rate limit no proxy/gateway complementa). Atrás de um proxy, o IP visto é o do proxy
- * a menos que o encaminhamento de cabeçalhos esteja configurado e confiável.
- */
 @Component
 public class LoginAttemptLimiter {
 

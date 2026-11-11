@@ -23,7 +23,6 @@ public final class AuthDtos {
     public record TokenResponse(String accessToken, String tokenType, long expiresInSeconds) {
     }
 
-    /** CPF sempre mascarado. */
     public record CustomerResponse(Long id, String name, String email, String cpf) {
     }
 }

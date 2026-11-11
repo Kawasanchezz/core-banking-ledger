@@ -14,7 +14,6 @@ import java.io.IOException;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
-/** Propaga/gera o correlation-id (header X-Correlation-Id) e o coloca no MDC para todos os logs da requisição. */
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class CorrelationIdFilter extends OncePerRequestFilter {
@@ -27,7 +26,6 @@ public class CorrelationIdFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
         String id = request.getHeader(HEADER);
-        // valor vindo do cliente é validado para evitar log injection
         if (id == null || !SAFE.matcher(id).matches()) {
             id = UUID.randomUUID().toString();
         }

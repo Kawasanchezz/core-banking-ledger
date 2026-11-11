@@ -58,7 +58,7 @@ class ConcurrencyIntegrationTest extends AbstractIntegrationTest {
                     start.await();
                     ThreadLocalRandom r = ThreadLocalRandom.current();
                     int from = r.nextInt(n);
-                    int to = (from + 1 + r.nextInt(n - 1)) % n;   // sempre diferente (inclui pares cruzados A<->B)
+                    int to = (from + 1 + r.nextInt(n - 1)) % n;
                     BigDecimal amount = BigDecimal.valueOf(r.nextInt(1, 40_000), 2).add(new BigDecimal("100.00"));
                     transactionService.transfer(customers.get(from), UUID.randomUUID().toString(),
                             new TransferRequest(accs.get(from), accs.get(to), amount, "concorrente"));
@@ -89,10 +89,8 @@ class ConcurrencyIntegrationTest extends AbstractIntegrationTest {
             assertThat(a.getBalance()).as("conta %s sem saldo negativo", id).isGreaterThanOrEqualTo(BigDecimal.ZERO);
             total = total.add(a.getBalance());
         }
-        // dinheiro não é criado nem destruído
         assertThat(total).isEqualByComparingTo(initial.multiply(BigDecimal.valueOf(n)));
 
-        // invariante global da dupla entrada: soma de TODOS os saldos (inclui o CAIXA) == 0
         BigDecimal systemSum = jdbc.queryForObject("SELECT COALESCE(SUM(balance), 0) FROM accounts", BigDecimal.class);
         assertThat(systemSum).isEqualByComparingTo("0");
         assertThat(reconciliation.findInconsistencies()).isEmpty();
@@ -105,7 +103,7 @@ class ConcurrencyIntegrationTest extends AbstractIntegrationTest {
         Long acc = newAccount(c, AccountType.POUPANCA);
         deposit(c, acc, "100.00");
 
-        int attempts = 20;   // 20 saques de 30,00 competindo por 100,00: só 3 podem passar
+        int attempts = 20;
         ExecutorService pool = Executors.newFixedThreadPool(8);
         AtomicInteger success = new AtomicInteger();
         List<Future<?>> futures = new ArrayList<>();

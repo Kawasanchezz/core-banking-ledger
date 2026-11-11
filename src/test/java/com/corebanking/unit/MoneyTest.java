@@ -29,7 +29,6 @@ class MoneyTest {
 
     @Test
     void bigDecimalAvoidsFloatingPointErrors() {
-        // 0.1 + 0.2 em double dá 0.30000000000000004
         assertThat(new BigDecimal("0.10").add(new BigDecimal("0.20"))).isEqualByComparingTo("0.30");
     }
 

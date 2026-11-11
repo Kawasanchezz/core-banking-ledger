@@ -26,7 +26,6 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-/** Erros no formato RFC 7807 (ProblemDetail) com {@code code} estável e {@code correlationId}. */
 @RestControllerAdvice
 public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 
@@ -45,7 +44,6 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     ResponseEntity<Object> handleIntegrity(DataIntegrityViolationException ex) {
-        // Corrida entre duas requisições violando UNIQUE (ex.: mesmo CPF/e-mail ao mesmo tempo)
         log.warn("Violação de integridade: {}", ex.getMostSpecificCause().getClass().getSimpleName());
         return problem(ErrorCode.CONCURRENT_UPDATE, "Conflito ao gravar os dados. Tente novamente.", null);
     }

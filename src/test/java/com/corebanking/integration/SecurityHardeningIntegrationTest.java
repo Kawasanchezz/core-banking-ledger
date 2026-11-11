@@ -15,7 +15,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-/** Regressão dos achados da auditoria de segurança. */
 class SecurityHardeningIntegrationTest extends AbstractIntegrationTest {
 
     @Autowired MockMvc mvc;

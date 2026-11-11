@@ -12,11 +12,6 @@ import java.time.Clock;
 import java.time.Instant;
 import java.util.List;
 
-/**
- * Lança uma operação no ledger de dupla entrada: sempre um débito e um crédito de mesmo valor,
- * e atualiza os saldos materializados. Deve ser chamado dentro de uma transação, com as contas
- * já bloqueadas (FOR UPDATE). Se qualquer passo falhar, a transação inteira sofre rollback.
- */
 @Component
 public class LedgerPoster {
 
@@ -35,7 +30,7 @@ public class LedgerPoster {
                                 Account debitAccount, Account creditAccount, Long initiatedBy, String idempotencyKey) {
         Instant now = clock.instant();
 
-        debitAccount.debit(amount);   // valida status e saldo
+        debitAccount.debit(amount);
         creditAccount.credit(amount);
 
         BankTransaction tx = transactions.save(
@@ -50,7 +45,6 @@ public class LedgerPoster {
         return tx;
     }
 
-    /** Invariante da dupla entrada: soma dos débitos == soma dos créditos. */
     static void assertBalanced(List<LedgerEntry> postings) {
         BigDecimal debits = sum(postings, EntryDirection.DEBIT);
         BigDecimal credits = sum(postings, EntryDirection.CREDIT);

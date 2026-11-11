@@ -19,7 +19,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-/** Fluxo completo pela API HTTP (segurança, validação, idempotência, extrato). */
 class BankingFlowIntegrationTest extends AbstractIntegrationTest {
 
     @Autowired MockMvc mvc;
@@ -103,7 +102,6 @@ class BankingFlowIntegrationTest extends AbstractIntegrationTest {
         assertThat(balance(alice, a)).isEqualTo("299.50");
         assertThat(balance(bob, b)).isEqualTo("200.50");
 
-        // extrato da Alice: mais recente primeiro (transferência/débito, depois depósito/crédito)
         LocalDate today = LocalDate.now(ZoneOffset.UTC);
         mvc.perform(auth(get("/api/v1/accounts/" + a + "/statement"), alice)
                         .param("from", today.minusDays(1).toString()).param("to", today.plusDays(1).toString()))
@@ -123,7 +121,6 @@ class BankingFlowIntegrationTest extends AbstractIntegrationTest {
                 .andExpect(jsonPath("$.content[0].type").value("DEPOSIT"))
                 .andExpect(jsonPath("$.totalPages").value(2));
 
-        // filtro por período: futuro e passado não retornam nada
         mvc.perform(auth(get("/api/v1/accounts/" + a + "/statement"), alice)
                         .param("from", today.plusDays(1).toString()))
                 .andExpect(jsonPath("$.totalElements").value(0));
@@ -254,10 +251,8 @@ class BankingFlowIntegrationTest extends AbstractIntegrationTest {
         MvcResult same = transfer(c, acc, acc, "1.00", key());
         assertThat(same.getResponse().getStatus()).isEqualTo(422);
         assertThat(body(same).get("code").asString()).isEqualTo("SAME_ACCOUNT_TRANSFER");
-        // tipo CAIXA não pode ser aberto por cliente
         mvc.perform(auth(post("/api/v1/accounts"), c).content("{\"type\":\"CAIXA\"}"))
                 .andExpect(status().isBadRequest());
-        // transferir para a conta CAIXA do banco é proibido
         deposit(c, acc, "10.00", key());
         assertThat(transfer(c, acc, 1L, "1.00", key()).getResponse().getStatus()).isEqualTo(404);
         mvc.perform(post("/api/v1/auth/login").contentType(MediaType.APPLICATION_JSON)

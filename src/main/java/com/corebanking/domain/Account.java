@@ -8,17 +8,11 @@ import lombok.Getter;
 import java.math.BigDecimal;
 import java.time.Instant;
 
-/**
- * Conta. O saldo é materializado aqui por performance, mas a fonte da verdade é o ledger
- * (saldo = soma dos créditos - soma dos débitos). Concorrência: lock pessimista nas operações
- * + {@code @Version} como segunda barreira.
- */
 @Getter
 @Entity
 @Table(name = "accounts")
 public class Account {
 
-    /** Id fixo da conta contábil CAIXA (seed da migration V2). É o menor id: sempre bloqueada primeiro. */
     public static final long CASH_ACCOUNT_ID = 1L;
 
     @Id
@@ -82,7 +76,6 @@ public class Account {
         return balance.add(overdraftLimit);
     }
 
-    /** Débito: reduz o saldo. Poupança nunca fica negativa; corrente respeita o limite. */
     public void debit(BigDecimal amount) {
         ensureActive();
         if (type != AccountType.CAIXA && amount.compareTo(availableBalance()) > 0) {

@@ -7,7 +7,6 @@ import org.hibernate.annotations.Immutable;
 import java.math.BigDecimal;
 import java.time.Instant;
 
-/** Lançamento contábil (débito ou crédito). Append-only: imutável no JPA e protegido por trigger no banco. */
 @Getter
 @Immutable
 @Entity

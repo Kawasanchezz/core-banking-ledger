@@ -31,7 +31,6 @@ public class AuthService {
     private final JwtService jwt;
     private final LoginAttemptLimiter attempts;
     private final Clock clock;
-    /** Hash descartável para equalizar o tempo de resposta quando o e-mail não existe. */
     private final String dummyHash;
 
     public AuthService(CustomerRepository customers, UserRepository users, PasswordEncoder encoder,

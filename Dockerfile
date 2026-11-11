@@ -3,7 +3,6 @@ WORKDIR /build
 COPY pom.xml .
 RUN mvn -B -q dependency:go-offline
 COPY src ./src
-# Testes rodam em `mvn verify` (precisam de Docker/Testcontainers); a imagem só empacota.
 RUN mvn -B -q -DskipTests package \
     && java -Djarmode=tools -jar target/core-banking-1.0.0.jar extract --layers --destination target/extracted
 

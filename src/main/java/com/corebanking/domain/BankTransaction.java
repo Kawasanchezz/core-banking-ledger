@@ -7,7 +7,6 @@ import org.hibernate.annotations.Immutable;
 import java.math.BigDecimal;
 import java.time.Instant;
 
-/** A operação de negócio (depósito, saque, transferência). Imutável; os lançamentos ficam em {@link LedgerEntry}. */
 @Getter
 @Immutable
 @Entity

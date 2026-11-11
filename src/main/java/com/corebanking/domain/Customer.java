@@ -17,7 +17,6 @@ public class Customer {
     @Column(nullable = false, length = 120)
     private String name;
 
-    /** Somente dígitos. */
     @Column(nullable = false, length = 11, updatable = false)
     private String cpf;
 

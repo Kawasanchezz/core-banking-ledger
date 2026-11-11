@@ -48,7 +48,6 @@ public class JwtService {
         return expiration.toSeconds();
     }
 
-    /** Devolve vazio para qualquer token inválido, expirado ou adulterado. */
     public Optional<AuthenticatedUser> parse(String token) {
         try {
             Claims claims = Jwts.parser().verifyWith(key).clock(() -> Date.from(clock.instant()))

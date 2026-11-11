@@ -17,7 +17,6 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-/** ACID: se o débito funciona e o crédito falha, TUDO é revertido. */
 class AtomicityIntegrationTest extends AbstractIntegrationTest {
 
     @Autowired LedgerEntryRepository ledgerEntries;
@@ -38,8 +37,6 @@ class AtomicityIntegrationTest extends AbstractIntegrationTest {
         long entriesBefore = ledgerEntries.count();
         String key = "atomic-" + UUID.randomUUID();
 
-        // Falha REAL no banco: um trigger recusa o lançamento de CRÉDITO da conta destino.
-        // O lançamento de DÉBITO (inserido antes) já foi gravado dentro da transação quando a falha ocorre.
         jdbc.execute("CREATE OR REPLACE FUNCTION test_fail_credit() RETURNS trigger AS $$ BEGIN "
                 + "RAISE EXCEPTION 'falha simulada no credito'; END; $$ LANGUAGE plpgsql");
         jdbc.execute("CREATE TRIGGER trg_test_fail_credit BEFORE INSERT ON ledger_entries FOR EACH ROW "
@@ -54,15 +51,14 @@ class AtomicityIntegrationTest extends AbstractIntegrationTest {
 
         Account src = accounts.findById(from).orElseThrow();
         Account dst = accounts.findById(to).orElseThrow();
-        assertThat(src.getBalance()).isEqualByComparingTo("100.00");   // débito revertido
-        assertThat(dst.getBalance()).isEqualByComparingTo("0.00");     // crédito nunca aplicado
-        assertThat(transactions.count()).isEqualTo(txBefore);          // sem registro da transação
-        assertThat(ledgerEntries.count()).isEqualTo(entriesBefore);    // sem lançamento órfão do débito
+        assertThat(src.getBalance()).isEqualByComparingTo("100.00");
+        assertThat(dst.getBalance()).isEqualByComparingTo("0.00");
+        assertThat(transactions.count()).isEqualTo(txBefore);
+        assertThat(ledgerEntries.count()).isEqualTo(entriesBefore);
         Integer keys = jdbc.queryForObject("SELECT count(*) FROM idempotency_keys WHERE idem_key = ?",
                 Integer.class, key);
-        assertThat(keys).isZero();                                     // chave também revertida
+        assertThat(keys).isZero();
 
-        // o retry com a mesma chave agora funciona normalmente
         transactionService.transfer(c1, key, new TransferRequest(from, to, new BigDecimal("60.00"), "retry"));
         assertThat(accounts.findById(from).orElseThrow().getBalance()).isEqualByComparingTo("40.00");
         assertThat(accounts.findById(to).orElseThrow().getBalance()).isEqualByComparingTo("60.00");
@@ -86,7 +82,6 @@ class AtomicityIntegrationTest extends AbstractIntegrationTest {
         Long c = newCustomer();
         Long acc = newAccount(c, AccountType.CORRENTE);
 
-        // Insere diretamente uma transação com UM lançamento só (desbalanceado): o COMMIT deve falhar.
         assertThatThrownBy(() -> {
             jdbc.execute((java.sql.Connection con) -> {
                 con.setAutoCommit(false);

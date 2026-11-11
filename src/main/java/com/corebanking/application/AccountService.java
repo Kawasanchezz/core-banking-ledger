@@ -73,7 +73,6 @@ public class AccountService {
         throw new BusinessException(ErrorCode.ACCOUNT_NOT_FOUND, "Conta não encontrada");
     }
 
-    /** Leitura sem lock: 404 se não existe, 403 se pertence a outro cliente. */
     @Transactional(readOnly = true)
     public Account requireOwned(Long customerId, Long accountId) {
         Account a = accounts.findById(accountId)

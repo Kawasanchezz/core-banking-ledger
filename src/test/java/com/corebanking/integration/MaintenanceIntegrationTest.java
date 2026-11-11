@@ -34,7 +34,7 @@ class MaintenanceIntegrationTest extends AbstractIntegrationTest {
         deposit(c, acc, "10.00");
         assertThat(reconciliation.check(c, acc).consistent()).isTrue();
 
-        jdbc.update("UPDATE accounts SET balance = 999.00 WHERE id = ?", acc);   // simula corrupção do saldo materializado
+        jdbc.update("UPDATE accounts SET balance = 999.00 WHERE id = ?", acc);
         assertThat(reconciliation.check(c, acc).consistent()).isFalse();
         assertThat(reconciliation.findInconsistencies()).extracting(r -> r.accountId()).contains(acc);
 

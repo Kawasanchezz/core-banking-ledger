@@ -21,13 +21,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeSet;
 
-/**
- * Casos de uso financeiros. Cada método é UMA transação ACID: validação, chave de idempotência,
- * locks, débito, crédito e lançamentos confirmam juntos ou revertem juntos.
- *
- * <p>Concorrência: lock pessimista ({@code SELECT ... FOR UPDATE}) nas contas envolvidas, sempre
- * adquirido em ordem crescente de id (evita deadlock), além do {@code @Version} da conta como segunda barreira.
- */
 @Service
 public class TransactionService {
 

@@ -1,4 +1,3 @@
--- 1) Ledger append-only: nenhum lançamento/transação pode ser alterado ou removido.
 CREATE FUNCTION forbid_ledger_mutation() RETURNS trigger AS $$
 BEGIN
     RAISE EXCEPTION 'Tabela % é append-only (% proibido). Use lançamento compensatório.', TG_TABLE_NAME, TG_OP;
@@ -13,7 +12,6 @@ CREATE TRIGGER trg_transactions_immutable
     BEFORE UPDATE OR DELETE ON transactions
     FOR EACH ROW EXECUTE FUNCTION forbid_ledger_mutation();
 
--- 2) Dupla entrada: ao COMMIT, cada transação deve ter débitos == créditos.
 CREATE FUNCTION ledger_check_balanced() RETURNS trigger AS $$
 DECLARE
     diff NUMERIC;

@@ -192,7 +192,6 @@ $('opForm').onsubmit = (ev) => {
   const f = new FormData(ev.target);
   const amount = Number(f.get('amount'));
   const description = (f.get('description') || '').trim() || undefined;
-  // uma chave NOVA por envio; um retry de rede reenviaria a mesma chave e não duplicaria
   const idemKey = crypto.randomUUID();
   guarded(async () => {
     const id = state.selected;

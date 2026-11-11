@@ -1,6 +1,5 @@
 package com.corebanking.domain.exception;
 
-/** Códigos de erro estáveis expostos na API (campo "code" do ProblemDetail). */
 public enum ErrorCode {
     VALIDATION_ERROR(400, "Dados inválidos"),
     INVALID_AMOUNT(400, "Valor inválido"),

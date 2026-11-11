@@ -16,14 +16,13 @@ import org.springframework.security.web.header.writers.StaticHeadersWriter;
 @Configuration
 public class SecurityConfig {
 
-    /** 'unsafe-inline' só em style-src: o Swagger UI injeta estilos inline. Scripts continuam restritos a 'self'. */
     private static final String CSP = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; "
             + "img-src 'self' data:; object-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'";
 
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http, JwtService jwtService, ObjectMapper mapper) throws Exception {
         http
-                .csrf(AbstractHttpConfigurer::disable) // API stateless com Bearer token, sem cookies
+                .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .headers(h -> h
                         .contentSecurityPolicy(c -> c.policyDirectives(CSP))

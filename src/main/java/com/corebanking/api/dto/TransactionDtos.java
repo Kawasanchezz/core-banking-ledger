@@ -16,7 +16,6 @@ public final class TransactionDtos {
     private TransactionDtos() {
     }
 
-    /** Depósito e saque. */
     public record AmountRequest(
             @NotNull @DecimalMin("0.01") @Digits(integer = 15, fraction = 2) BigDecimal amount,
             @Size(max = 140) String description) {
@@ -29,7 +28,6 @@ public final class TransactionDtos {
             @Size(max = 140) String description) {
     }
 
-    /** {@code balanceAfter} é o saldo da conta do solicitante após a operação. */
     public record TransactionResponse(Long transactionId, TransactionType type, BigDecimal amount,
                                       String description, Long sourceAccountId, Long targetAccountId,
                                       BigDecimal balanceAfter, Instant createdAt) {

@@ -14,7 +14,6 @@ import java.util.Optional;
 
 public interface AccountRepository extends JpaRepository<Account, Long> {
 
-    /** SELECT ... FOR UPDATE. Timeout de 5s para não esperar indefinidamente por um lock. */
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @QueryHints(@QueryHint(name = "jakarta.persistence.lock.timeout", value = "5000"))
     @Query("select a from Account a where a.id = :id")
@@ -22,6 +21,5 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 
     List<Account> findByCustomerIdOrderById(Long customerId);
 
-    /** Checagem de dono SEM carregar a entidade no persistence context (evita estado obsoleto antes do FOR UPDATE). */
     boolean existsByIdAndCustomerId(Long id, Long customerId);
 }

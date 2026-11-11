@@ -22,18 +22,6 @@ import java.util.HexFormat;
 import java.util.Map;
 import java.util.function.Supplier;
 
-/**
- * Idempotência de operações de escrita via header {@code Idempotency-Key}.
- *
- * <p>Fluxo (tudo na MESMA transação da operação financeira):
- * <ol>
- *   <li>{@code INSERT ... ON CONFLICT DO NOTHING} da chave. Se outra transação está inserindo a mesma chave,
- *       o Postgres faz esta esperar o commit/rollback dela (estratégia "espera").</li>
- *   <li>Inseriu: executa a operação e grava a resposta junto da chave. Commit atômico.</li>
- *   <li>Não inseriu: a chave já foi concluída. Mesmo hash do payload devolve a resposta original; hash diferente = 422.</li>
- * </ol>
- * Se a operação falhar, o rollback desfaz também a chave: o retry reprocessa normalmente.
- */
 @Service
 public class IdempotencyService {
 
@@ -59,7 +47,6 @@ public class IdempotencyService {
         }
     }
 
-    /** Hash SHA-256 canônico dos parâmetros da requisição. */
     public static String fingerprint(Object... parts) {
         StringBuilder sb = new StringBuilder();
         for (Object p : parts) {
@@ -104,7 +91,6 @@ public class IdempotencyService {
         return new IdempotentResult<>(deserialize((String) row.get("response_body"), type), true);
     }
 
-    /** Remove chaves mais antigas que o TTL configurado. */
     @Transactional
     public int purgeExpired() {
         Instant limit = clock.instant().minus(props.idempotency().ttl());

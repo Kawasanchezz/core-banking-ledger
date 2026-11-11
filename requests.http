@@ -1,5 +1,3 @@
-### Coleção para a extensão "REST Client" (VS Code) ou IntelliJ HTTP Client.
-### Execute na ordem. As variáveis são preenchidas a partir das respostas.
 
 @host = http://localhost:8080/api/v1
 

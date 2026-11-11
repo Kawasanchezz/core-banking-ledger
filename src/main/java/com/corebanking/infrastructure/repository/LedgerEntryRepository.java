@@ -11,7 +11,6 @@ import java.time.Instant;
 
 public interface LedgerEntryRepository extends JpaRepository<LedgerEntry, Long> {
 
-    /** Extrato: lançamentos da conta no período [from, to), do mais recente para o mais antigo. */
     @Query(value = """
             select e from LedgerEntry e join fetch e.transaction
             where e.accountId = :accountId and e.createdAt >= :from and e.createdAt < :to

@@ -10,7 +10,6 @@ import org.springframework.http.ProblemDetail;
 
 import java.io.IOException;
 
-/** Respostas de erro geradas por filtros (antes de chegar ao controller), no mesmo formato da API. */
 final class ProblemResponses {
 
     private ProblemResponses() {

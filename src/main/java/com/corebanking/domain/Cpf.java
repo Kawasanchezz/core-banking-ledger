@@ -2,7 +2,6 @@ package com.corebanking.domain;
 
 import java.util.regex.Pattern;
 
-/** Validação e normalização de CPF (dígitos verificadores, rejeita sequências repetidas). */
 public final class Cpf {
 
     private static final Pattern FORMAT = Pattern.compile("\\d{11}|\\d{3}\\.\\d{3}\\.\\d{3}-\\d{2}");
@@ -23,12 +22,10 @@ public final class Cpf {
         return d1 == digits.charAt(9) - '0' && d2 == digits.charAt(10) - '0';
     }
 
-    /** Remove a máscara, mantendo apenas os dígitos. */
     public static String normalize(String value) {
         return value == null ? null : value.replaceAll("\\D", "");
     }
 
-    /** Máscara para exibição e logs: ***.***.789-** */
     public static String mask(String digits) {
         if (digits == null || digits.length() != 11) {
             return "***";

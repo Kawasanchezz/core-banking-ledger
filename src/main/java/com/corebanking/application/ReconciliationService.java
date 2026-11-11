@@ -9,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.List;
 
-/** Reconciliação: o saldo materializado da conta deve ser igual a soma(créditos) - soma(débitos) do ledger. */
 @Service
 public class ReconciliationService {
 
@@ -34,7 +33,6 @@ public class ReconciliationService {
         return new ReconciliationResponse(accountId, a.getBalance(), ledger, a.getBalance().compareTo(ledger) == 0);
     }
 
-    /** Todas as contas cujo saldo materializado diverge do ledger (esperado: lista vazia). */
     @Transactional(readOnly = true)
     public List<ReconciliationResponse> findInconsistencies() {
         return jdbc.query("""

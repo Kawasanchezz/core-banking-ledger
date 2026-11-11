@@ -28,7 +28,6 @@ public class MaintenanceJobs {
         }
     }
 
-    /** Reconciliação saldo x ledger. Qualquer divergência é logada como ERROR (ponto de alerta). */
     @Scheduled(cron = "${bank.reconciliation.cron:0 0 3 * * *}")
     public void reconcile() {
         var issues = reconciliation.findInconsistencies();

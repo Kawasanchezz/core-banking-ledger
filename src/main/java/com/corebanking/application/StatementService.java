@@ -32,9 +32,6 @@ public class StatementService {
         this.entries = entries;
     }
 
-    /**
-     * Extrato paginado. {@code from} e {@code to} são datas (UTC), ambas inclusivas e opcionais.
-     */
     @Transactional(readOnly = true)
     public PageResponse<StatementEntryResponse> statement(Long customerId, Long accountId,
                                                           LocalDate from, LocalDate to, int page, int size) {
@@ -59,7 +56,6 @@ public class StatementService {
                 result.getNumber(), result.getSize(), result.getTotalElements(), result.getTotalPages());
     }
 
-    /** Datas absurdas (ex.: ano 999999999) estourariam a conversão para Instant/Timestamp e virariam erro 500. */
     private static boolean outOfRange(LocalDate date) {
         return date != null && (date.isBefore(MIN_DATE) || date.isAfter(MAX_DATE));
     }

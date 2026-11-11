@@ -18,16 +18,11 @@ import java.math.BigDecimal;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicLong;
 
-/** PostgreSQL real via Testcontainers (um container compartilhado por toda a suíte). */
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 public abstract class AbstractIntegrationTest {
 
-    /**
-     * Por padrão sobe um PostgreSQL via Testcontainers. Se TEST_DB_URL estiver definido (ex.: CI/execução
-     * dentro de um container sem acesso ao socket do Docker), usa esse PostgreSQL externo e VAZIO.
-     */
     private static final String EXTERNAL_URL = System.getenv("TEST_DB_URL");
     static final PostgreSQLContainer POSTGRES =
             EXTERNAL_URL == null ? new PostgreSQLContainer("postgres:16-alpine") : null;
@@ -57,7 +52,6 @@ public abstract class AbstractIntegrationTest {
     @Autowired protected AccountService accountService;
     @Autowired protected TransactionService transactionService;
 
-    /** Cria cliente (CPF válido aleatório e e-mail único) e devolve o customerId. */
     protected Long newCustomer() {
         return authService.register(new RegisterRequest("Cliente Teste",
                 uniqueEmail(), "senha-forte-123", randomCpf())).id();
@@ -76,7 +70,6 @@ public abstract class AbstractIntegrationTest {
         return "user" + SEQ.incrementAndGet() + "-" + System.nanoTime() + "@test.com";
     }
 
-    /** Gera um CPF com dígitos verificadores corretos (implementação independente da de produção). */
     protected static String randomCpf() {
         int[] d = new int[11];
         do {
