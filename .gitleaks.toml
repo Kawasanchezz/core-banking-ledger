@@ -1,0 +1,13 @@
+title = "core-banking"
+
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Senhas de demonstração em documentação, coleção HTTP e testes: não são credenciais reais"
+targetRules = ["generic-api-key"]
+paths = [
+  '''README\.md''',
+  '''requests\.http''',
+  '''src/test/.*''',
+]
