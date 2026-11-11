@@ -227,3 +227,6 @@ curl -s $H/accounts/1000/reconciliation -H "Authorization: Bearer $TOKEN"
 - **Extrato por `OFFSET`:** adequado a este escopo; para históricos enormes, trocar por paginação *keyset* (`created_at, id`).
 - **Segredo JWT simétrico (HS256):** suficiente para um único serviço; com múltiplos consumidores, preferir RS256/JWKS e rotação de chaves. Não há *refresh token* nem revogação.
 - **Rate limit só no login e em memória** (por instância); operações autenticadas não têm limite de frequência. Em produção, complemente no gateway.
+
+## Licença
+MIT. Veja [LICENSE](LICENSE).
