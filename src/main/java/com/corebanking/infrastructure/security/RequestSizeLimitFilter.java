@@ -1,7 +1,7 @@
 package com.corebanking.infrastructure.security;
 
 import com.corebanking.domain.exception.ErrorCode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

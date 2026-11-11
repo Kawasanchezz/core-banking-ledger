@@ -1,7 +1,7 @@
 package com.corebanking.infrastructure.security;
 
 import com.corebanking.domain.exception.ErrorCode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.MDC;
 import org.springframework.http.HttpStatus;

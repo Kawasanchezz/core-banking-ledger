@@ -3,8 +3,8 @@ package com.corebanking.application;
 import com.corebanking.domain.exception.BusinessException;
 import com.corebanking.domain.exception.ErrorCode;
 import com.corebanking.infrastructure.config.BankProperties;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -114,7 +114,7 @@ public class IdempotencyService {
     private String serialize(Object value) {
         try {
             return mapper.writeValueAsString(value);
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             throw new IllegalStateException("Falha ao serializar resposta idempotente", e);
         }
     }
@@ -122,7 +122,7 @@ public class IdempotencyService {
     private <T> T deserialize(String json, Class<T> type) {
         try {
             return mapper.readValue(json, type);
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             throw new IllegalStateException("Falha ao ler resposta idempotente", e);
         }
     }

@@ -12,9 +12,6 @@ spring:
         jdbc.time_zone: UTC
   flyway:
     enabled: true
-  jackson:
-    serialization:
-      write-dates-as-timestamps: false
 
 server:
   shutdown: graceful
