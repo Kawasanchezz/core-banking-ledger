@@ -28,6 +28,7 @@ docker compose up --build
 - Interface web de demonstração: <http://localhost:8080> · Swagger UI: <http://localhost:8080/swagger-ui.html>
 - Health: `/actuator/health` (liveness/readiness em `/actuator/health/liveness|readiness`)
 - As portas são publicadas só em `127.0.0.1` (acesso apenas da própria máquina).
+- O PostgreSQL só aplica `DB_PASSWORD` na criação do volume. Se trocar a senha depois, rode `docker compose down -v` (apaga os dados) antes de subir de novo.
 
 ### Desenvolvimento local
 ```bash
