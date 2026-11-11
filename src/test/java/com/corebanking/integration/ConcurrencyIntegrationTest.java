@@ -94,7 +94,6 @@ class ConcurrencyIntegrationTest extends AbstractIntegrationTest {
         BigDecimal systemSum = jdbc.queryForObject("SELECT COALESCE(SUM(balance), 0) FROM accounts", BigDecimal.class);
         assertThat(systemSum).isEqualByComparingTo("0");
         assertThat(reconciliation.findInconsistencies()).isEmpty();
-        System.out.printf("Transferências concluídas=%d, recusadas por saldo=%d%n", ok.get(), insufficient.get());
     }
 
     @Test
