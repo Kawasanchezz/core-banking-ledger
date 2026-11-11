@@ -84,6 +84,21 @@ class SecurityHardeningIntegrationTest extends AbstractIntegrationTest {
     }
 
     @Test
+    void apiIsStatelessAndNeverSetsCookies() throws Exception {
+        String email = registerAndGetEmail();
+        mvc.perform(post("/api/v1/auth/login").contentType(MediaType.APPLICATION_JSON)
+                        .content(json.writeValueAsString(Map.of("email", email, "password", "senha-forte-123"))))
+                .andExpect(status().isOk())
+                .andExpect(header().doesNotExist("Set-Cookie"));
+        mvc.perform(get("/api/v1/accounts")).andExpect(header().doesNotExist("Set-Cookie"));
+    }
+
+    @Test
+    void csrfProtectionStaysEnabledOutsideTheTokenAuthenticatedApi() throws Exception {
+        mvc.perform(post("/index.html")).andExpect(status().isForbidden());
+    }
+
+    @Test
     void staticFrontendIsPublicButApiIsNot() throws Exception {
         mvc.perform(get("/")).andExpect(status().isOk());
         mvc.perform(get("/app.js")).andExpect(status().isOk());

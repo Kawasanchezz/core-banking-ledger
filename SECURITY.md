@@ -22,6 +22,7 @@ Resposta inicial esperada em até 7 dias; correção ou plano de mitigação em 
 - Freio a força bruta no login: 10 falhas por e-mail ou 30 por IP em 15 minutos bloqueiam novas tentativas (429).
 - Limite de 16 KiB no corpo das requisições; paginação limitada a 100 itens.
 - Cabeçalhos de segurança: CSP, `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, `Permissions-Policy`.
+- CSRF: a API (/api/**) autentica só pelo header Authorization: Bearer, sem cookies nem sessão, então não há credencial que o navegador envie sozinho em um ataque CSRF. A proteção do Spring fica ligada para qualquer outro caminho, e um teste garante que a API nunca emite Set-Cookie.
 - Respostas de erro sem stack trace, no formato RFC 7807, com `correlationId`.
 - Integridade financeira garantida no banco: ledger append-only por trigger e débitos = créditos verificado no commit.
 - Contêiner sem root (uid 10001), sistema de arquivos somente leitura, sem capabilities, portas publicadas só em `127.0.0.1`.
