@@ -2,7 +2,7 @@
 
 API REST de core banking com **ledger de dupla entrada**, **transações ACID**, **controle de concorrência** e **idempotência**.
 
-**Stack:** Java 21 · Spring Boot 4.0 · Spring Security + JWT · JPA/Hibernate · PostgreSQL 16 · Flyway · Docker · Testcontainers
+**Stack:** Java 21 · Spring Boot 4 · Spring Security + JWT · JPA/Hibernate · PostgreSQL 16 · Flyway · Docker · Testcontainers
 
 Projeto acadêmico de demonstração. Política de segurança e limitações conhecidas em [SECURITY.md](SECURITY.md).
 
